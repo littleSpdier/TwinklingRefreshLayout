@@ -46,7 +46,7 @@ public class PhotoActivity extends AppCompatActivity {
 //        ProgressLayout headerView = new ProgressLayout(this);
         BezierLayout headerView = new BezierLayout(this);
         refreshLayout.setHeaderView(headerView);
-        refreshLayout.setWaveHeight(140);
+        refreshLayout.setMaxHeadHeight(140);
 //        refreshLayout.setFloatRefresh(true);
 //        refreshLayout.setPureScrollModeOn(true);
         refreshLayout.setOverScrollBottomShow(false);
@@ -54,7 +54,12 @@ public class PhotoActivity extends AppCompatActivity {
 
 //        addHeader();
         refreshCard();
-
+        findViewById(R.id.ib_refresh).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshLayout.startRefresh();
+            }
+        });
 
         refreshLayout.setOnRefreshListener(new RefreshListenerAdapter() {
             @Override

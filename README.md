@@ -1,3 +1,5 @@
+## 【DECREEPTED】
+
 # TwinklingRefreshLayout
 [中文文档](./README_CN.md)
 
@@ -10,6 +12,9 @@ TwinklingRefreshLayout extended the thoughts of SwipeRefreshLayout,using a ViewG
  - You can open a pure bounds rebound mode.
  -  Lots of methods in the class OnRefreshListener.
  - It provides an interface to the callback during the sliding coefficient. Personalized offer good support.
+ - NestedScroll,CoordinatorLayout
+
+ **Any View is supported.**
 
 ![](art/structure_v1.0.png)
 
@@ -18,7 +23,7 @@ TwinklingRefreshLayout extended the thoughts of SwipeRefreshLayout,using a ViewG
 
 ![](art/gif_recyclerview.gif)  ![](art/gif_listview.gif)  ![](art/gif_gridview.gif) ![](art/gif_recyclerview2.gif) ![](art/gif_scrollview.gif)  ![](art/gif_webview.gif)
 
-You can download the Video for more details.
+You can download these Videos for more details.
 
 - [Music - ListView - FixedHeader](art/gif_listview.mp4)
 - [Food - RecyclerView - PureScrollMode](art/gif_recyclerview.mp4)
@@ -30,7 +35,7 @@ You can download the Video for more details.
 ## Usage
 #### 1.Add a gradle dependency.
 ```
-compile 'com.lcodecorex:tkrefreshlayout:1.0.5'
+compile 'com.lcodecorex:tkrefreshlayout:1.0.7'
 ```
 
 #### 2.Add TwinklingRefreshLayout in the layout xml.
@@ -87,8 +92,9 @@ Use finishRefreshing() method to end refresh, finishLoadmore() method to end loa
 And if you want you refresh automatically, call the method startRefresh().
 
 ##### setWaveHeight、setHeaderHeight、setBottomHeight、setOverScrollHeight
-- setWaveHeight is used To set the maximum height of the head can be stretched.
+- setMaxHeadHeight is used To set the maximum height of the head can be stretched.
 - setHeaderHeight is used to set the standard head height.
+- setMaxBottomHeight.
 - setBottomHeight is used to set the Bottom height.
 - setOverScrollHeight is used to set the max height of overscroll.
 
@@ -119,16 +125,29 @@ Allow you to add a view fixed on the top.
 ##### setFloatRefresh(boolean)
 Make refresh-animation like SwipeRefreshLayout.
 
+##### setTargetView(View view)
+Set the target view that you can scroll.
+
+##### setDefaultHeader、setDefaultFooter
+static methods aims to set a default header/footer in a/an Application/Activity.
+
 #### 4.Attributes
-- tr_wave_height - Flexible head height
+- tr_max_head_height - Flexible head height
 - tr_head_height -  Head height
+- tr_max_bottom_height
 - tr_bottom_height - Bottom height
 - tr_overscroll_height - OverScroll Height
+- tr_enable_refresh - default is true
 - tr_enable_loadmore - default is true
 - tr_pureScrollMode_on - default is false
 - tr_overscroll_top_show - default is true
 - tr_overscroll_bottom_show - default is true
 - tr_enable_overscroll - default is true.
+- tr_floatRefresh - open the float-refresh mode.
+- tr_autoLoadMore
+- tr_enable_keepIView - default is true.
+- tr_showRefreshingWhenOverScroll - default is true.
+- tr_showLoadingWhenOverScroll - default is true.
 
 ## Other
 ### 1.setOnRefreshListener
@@ -160,7 +179,7 @@ fraction = currentMoveHeight/headHeight OR (fraction = currentMoveHeight/bottomH
 - setColorSchemeResources(@ColorRes int... colorResIds)
 
 ####Footer
-##### BottomProgressView(pic 2)
+##### BallPulseView(pic 2)
 - setNormalColor(@ColorInt int color)
 - setAnimatingColor(@ColorInt int color)
 
@@ -279,7 +298,116 @@ startAnim - be called automatically after the method onRefresh/onLoadMore is cal
 
 Congratulations! Simple to use and simple to Personalise.（To see a more simple example. **TextHeaderView(pic 4)**）。
 
+### NestedScroll
+#### TwinklingRefreshLayout Nested CoordinatorLayout
+---layout
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coord_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:addStatesFromChildren="true"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false">
+
+            <!--...-->
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    </android.support.design.widget.CoordinatorLayout>
+</com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>
+```
+
+--- code1
+```
+refreshLayout.setTargetView(rv);
+```
+Find the RecyclerView/ListView.
+
+--- code2
+```java
+AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        if (verticalOffset >= 0) {
+            refreshLayout.setEnableRefresh(true);
+            refreshLayout.setEnableOverScroll(false);
+        } else {
+            refreshLayout.setEnableRefresh(false);
+            refreshLayout.setEnableOverScroll(false);
+        }
+    }
+});
+```
+
+####CoordinatorLayout nested TwinklingRefreshLayout
+--- layout
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coord_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:addStatesFromChildren="true"
+    android:fitsSystemWindows="true">
+
+    <com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout
+        android:id="@+id/refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+```
+Pay attention to `layout_behavior="@string/appbar_scrolling_view_behavior"` for TwinklingRefreshLayout.
+
+> ps：Contact me: lcodecore@163.com
+> QQ group: 202640706
+
+If you like this library, you can donate me. Buy me a coffee!
+
+![](art/alipay.jpg) ![](art/wepay.png)
+
 ## Update Logs
+#### v1.07
+- NestedScroll,CoordinateLayout
+- Any View
+- Keep state when refreshing/loading.
+
+#### v1.06
+- Repair memory leaks of customized Views.
+- remove the dependence of AVLoadingIndicatorView.
+- Fix bugs of OverScroll when TargetView scrolls at the top/bottom.
+- Repair bugs of touching,scroll-event listeners.
+- Optimization of interface flicker problems after load-more.
+
 #### v1.05 Emergency Fix
 - Fix the bug of setAutoLoadMore().
 - Fix the bug that FixedHeader covered the first item of listview.
@@ -296,9 +424,6 @@ Congratulations! Simple to use and simple to Personalise.（To see a more simple
 - more attributes.
 - Fix the NullPointerException bug in Fragment.
 - Fix the Sliding conflict.
-
-> ps：Contact me: lcodecore@163.com
-
 
 
 License
@@ -317,4 +442,3 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
