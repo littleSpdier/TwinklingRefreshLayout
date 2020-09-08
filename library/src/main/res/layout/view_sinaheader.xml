@@ -7,7 +7,7 @@
         android:id="@+id/iv_arrow"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_arrow"/>
+        android:src="@mipmap/refresh_head_arrow"/>
 
     <ImageView
         android:id="@+id/iv_loading"

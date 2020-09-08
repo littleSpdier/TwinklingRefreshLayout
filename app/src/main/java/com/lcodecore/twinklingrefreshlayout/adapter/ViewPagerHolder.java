@@ -2,7 +2,6 @@ package com.lcodecore.twinklingrefreshlayout.adapter;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -11,19 +10,18 @@ import com.lcodecore.twinklingrefreshlayout.adapter.base.CommonHolder;
 import com.lcodecore.twinklingrefreshlayout.beans.Card;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class ViewPagerHolder extends CommonHolder<Void> {
     private LoopViewPagerAdapter viewPagerAdapter;
     private List<Card> cards = new ArrayList<>();
 
-    @Bind(R.id.viewPager)
+    @BindView(R.id.viewPager)
     ViewPager viewPager;
 
-    @Bind(R.id.indicators)
+    @BindView(R.id.indicators)
     LinearLayout indicators;
 
     public ViewPagerHolder(Context context, ViewGroup root) {
